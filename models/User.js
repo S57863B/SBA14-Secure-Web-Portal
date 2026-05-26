@@ -31,16 +31,11 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) {
-    return next();
+    return;
   }
-  try {
-    this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
-    next();
-  } catch (err) {
-    next(err);
-  }
+  this.password = await bcrypt.hash(this.password, SALT_ROUNDS);
 });
 
 UserSchema.methods.comparePassword = async function (candidatePassword) {
